@@ -1,0 +1,47 @@
+datasource db {
+  provider = "mongodb"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum ProjectStatus {
+  ATIVO
+  INATIVO
+}
+
+model User {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  nome         String
+  email        String    @unique
+  senha        String
+  cpf          String    @unique
+  telefone     String    @unique
+  endereco     String
+  avatar_url   String?
+  createdAt    DateTime  @default(now())
+  
+  // Relação corrigida para o Prisma + MongoDB
+  projectIds   String[]  @db.ObjectId
+  participando Project[] @relation(fields: [projectIds], references: [id])
+}
+
+model Project {
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  nome_projeto    String
+  recorrencia     String
+  endereco        String
+  descricao       String?
+  categoria       String
+  avatar_url      String?
+  email           String        @unique
+  senha           String
+  imagens_projeto String[]
+  status          ProjectStatus @default(ATIVO)
+  createdAt       DateTime      @default(now())
+  
+  // Relação corrigida para o Prisma + MongoDB
+  userIds         String[]      @db.ObjectId
+  integrantes     User[]        @relation(fields: [userIds], references: [id])
+}
