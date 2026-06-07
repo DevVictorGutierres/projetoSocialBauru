@@ -1,3 +1,7 @@
-/node_modules/
+# Variáveis de ambiente (Segurança máxima)
 .env
-src/generated/prisma/
+.env.local
+
+# Pastas de dependências e builds do Node
+node_modules/
+dist/
