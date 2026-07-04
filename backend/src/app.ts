@@ -1,20 +1,24 @@
-import 'dotenv/config';
-import express from 'express';
-import cors from 'cors';
-import userRouter from './routes/user.routes.js';
-import projectRouter from './routes/project.routes.js';
+import "dotenv/config";
+import express from "express";
+import cors from "cors";
+
+import userRouter from "./routes/user.routes.js";
+import projectRouter from "./routes/project.routes.js";
 
 const app = express();
-const PORT = process.env.PORT;
 
 app.use(cors());
 app.use(express.json());
-app.use(userRouter);
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}!`);
+app.get("/", (_, res) => {
+    return res.status(200).json({
+        application: "Projeto Social API",
+        version: "1.0.0",
+        status: "online"
+    });
 });
 
-app.get('/', (req, res) => {
-  res.send('Bem-vindo à API de Gerenciamento de Projetos!');
-});
+app.use("/api", userRouter);
+app.use("/api", projectRouter);
+
+export default app;

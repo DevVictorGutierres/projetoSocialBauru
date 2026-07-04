@@ -1,20 +1,12 @@
 import { Router } from 'express';
-import { createProjectController } from '../controllers/controllers.js';
+import { createProjectController, getAllProjectsController, getProjectByIdController, updateProjectController, deleteProjectController } from '../controllers/project.controller.js';
 
 const projectRouter = Router();
 
 projectRouter.post('/projects', createProjectController);
-
-projectRouter.get('/projects', (req, res) => {
-  res.send('Rota para listar projetos');
-});
-
-projectRouter.get('/projects/:id', (req, res) => {
-  res.send(`Rota para listar projeto com ID ${req.params.id}`);
-});
-
-projectRouter.delete('/projects/:id', (req, res) => {
-  res.send(`Rota para deletar projeto com ID ${req.params.id}`);
-});
+projectRouter.get('/projects', getAllProjectsController);
+projectRouter.get('/projects/:id', getProjectByIdController);
+projectRouter.put('/projects/:id', updateProjectController);
+projectRouter.delete('/projects/:id', deleteProjectController);
 
 export default projectRouter;
