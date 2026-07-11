@@ -12,6 +12,18 @@ enum ProjectStatus {
   INATIVO
 }
 
+enum Categorias {
+    EDUCACAO
+    ANIMAIS
+    IDOSOS
+    CRIANCAS
+    SAUDE
+    ESPORTE
+    CULTURA
+    ALIMENTACAO
+    MEIO_AMBIENTE
+}
+
 model User {
   id           String    @id @default(auto()) @map("_id") @db.ObjectId
   nome         String
@@ -20,29 +32,34 @@ model User {
   cpf          String    @unique
   telefone     String    @unique
   endereco     String
-  avatar_url   String?
+  bairro       String
+  cidade       String
+  estado       String
+  avatarUrl   String?
   createdAt    DateTime  @default(now())
-  
-  // Relação corrigida para o Prisma + MongoDB
-  projectIds   String[]  @db.ObjectId
-  participando Project[] @relation(fields: [projectIds], references: [id])
+  meusProjetos Project[] @relation("Owner")
 }
 
 model Project {
   id              String        @id @default(auto()) @map("_id") @db.ObjectId
-  nome_projeto    String
-  recorrencia     String
+  nome            String
+  ownerId         String        @db.ObjectId
+  owner           User          @relation("Owner", fields: [ownerId], references: [id])
+  telefone        String?
+  diasFuncionamento     String[]
   endereco        String
+  bairro          String
+  cidade          String
+  estado          String
   descricao       String?
-  categoria       String
-  avatar_url      String?
-  email           String        @unique
-  senha           String
-  imagens_projeto String[]
+  categoria       Categorias
+  avatarUrl       String?
+  email           String
+  instagram       String?
+  facebook        String?
+  site            String?
+  imagensProjeto  String[]
   status          ProjectStatus @default(ATIVO)
   createdAt       DateTime      @default(now())
-  
-  // Relação corrigida para o Prisma + MongoDB
   userIds         String[]      @db.ObjectId
-  integrantes     User[]        @relation(fields: [userIds], references: [id])
 }
