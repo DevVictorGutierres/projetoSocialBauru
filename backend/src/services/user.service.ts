@@ -1,8 +1,14 @@
 import { prisma } from '../config/prisma.js';
+import bcrypt from 'bcrypt';
 
 const createUser = async (userData: any) => {
+  const { confirmarSenha, ...dadosUsuario } = userData;
+  const senhaHash = await bcrypt.hash(dadosUsuario.senha, 10);
   return prisma.user.create({
-    data: userData
+    data: {
+      ...dadosUsuario,
+      senha: senhaHash
+    }
   });
 };
 

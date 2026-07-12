@@ -35,7 +35,8 @@ model User {
   bairro       String
   cidade       String
   estado       String
-  avatarUrl   String?
+  cep          String
+  avatarUrl    String?
   createdAt    DateTime  @default(now())
   meusProjetos Project[] @relation("Owner")
 }
@@ -51,6 +52,7 @@ model Project {
   bairro          String
   cidade          String
   estado          String
+  cep             String
   descricao       String?
   categoria       Categorias
   avatarUrl       String?
