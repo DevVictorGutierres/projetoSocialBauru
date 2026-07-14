@@ -1,9 +1,13 @@
 import { prisma } from '../config/prisma.js';
 
-const createProject = async (projectData: any) => {
-  return prisma.project.create({
-    data: projectData
-  });
+const createProject = async (projectData: any, ownerId: string) => {
+
+    return prisma.project.create({
+        data: {
+            ...projectData,
+            ownerId
+        }
+    });
 };
 
 const getProjectById = async (projectId: string) => {

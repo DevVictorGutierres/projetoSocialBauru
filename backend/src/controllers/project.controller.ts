@@ -3,7 +3,7 @@ import { createProject, getProjectById, getAllProjects, updateProject, deletePro
 
 const createProjectController = async (req: Request, res: Response) => {
   try {
-    const newProject = await createProject(req.body);
+    const newProject = await createProject(req.body, req.user.id);
     res.status(201).json({
         message: 'Projeto criado com sucesso!',
         project: newProject
