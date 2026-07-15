@@ -1,6 +1,8 @@
 import { prisma } from '../config/prisma.js';
+import type { CreateProjectDTO } from '../dtos/project/create.project.js';
+import type { UpdateProjectDTO } from '../dtos/project/update.project.js';
 
-const createProject = async (projectData: any, ownerId: string) => {
+const createProject = async (projectData: CreateProjectDTO, ownerId: string) => {
 
     return prisma.project.create({
         data: {
@@ -20,7 +22,7 @@ const getAllProjects = async () => {
   return prisma.project.findMany();
 }
 
-const updateProject = async (projectId: string, projectData: any) => {
+const updateProject = async (projectId: string, projectData: UpdateProjectDTO) => {
   return prisma.project.update({
     where: { id: projectId },
     data: projectData

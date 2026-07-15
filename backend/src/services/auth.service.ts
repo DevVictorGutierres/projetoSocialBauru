@@ -1,10 +1,11 @@
 import { prisma } from '../config/prisma.js';
 import { generateToken } from '../utils/jwt.js';
+import type { AuthLoginDTO } from '../dtos/auth/login.js';
 import bcrypt from 'bcrypt';
 
-export const authenticateUser = async (email: string, senha: string) => {
+export const authenticateUser = async ({ email, senha }: AuthLoginDTO) => {
     const user = await prisma.user.findUnique({
-        where: { email }
+        where: { email: email }
     });
 
     if (!user) {

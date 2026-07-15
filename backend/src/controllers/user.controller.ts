@@ -3,15 +3,16 @@ import { createUser, getUserById, getAllUsers, updateUser, deleteUser } from '..
 
 const createUserController = async (req: Request, res: Response) => {
   try {
-    const newUser = await createUser(req.body);
+    const { confirmarSenha, ...userData } = req.body;
+    const newUser = await createUser(userData);
     res.status(201).json({
-        message: 'Usuário criado com sucesso!',
-        user: newUser
+      message: 'Usuário criado com sucesso!',
+      user: newUser
     });
   } catch (error: any) {
     console.error('Erro ao criar usuário:', error);
-    return res.status(400).json({ 
-      error: 'Erro ao criar usuário', 
+    return res.status(400).json({
+      error: 'Erro ao criar usuário',
       details: error.message
     });
   }
@@ -20,6 +21,11 @@ const createUserController = async (req: Request, res: Response) => {
 const getUserByIdController = async (req: Request, res: Response) => {
   try {
     const id = String(req.params.id);
+    if (id !== req.user?.id) {
+      return res.status(403).json({
+        error: "Você não tem permissão para visualizar este usuário."
+      });
+    }
     const user = await getUserById(id);
     if (!user) {
       return res.status(404).json({ error: 'Usuário não encontrado' });
@@ -50,6 +56,9 @@ const getAllUsersController = async (req: Request, res: Response) => {
 const updateUserController = async (req: Request, res: Response) => {
   try {
     const id = String(req.params.id);
+    if (id !== req.user?.id) {
+      return res.status(403).json({ error: 'Você não tem permissão para atualizar este usuário' });
+    }
     const user = await getUserById(id);
     if (!user) {
       return res.status(404).json({ error: 'Usuário não encontrado' });
@@ -71,6 +80,9 @@ const updateUserController = async (req: Request, res: Response) => {
 const deleteUserController = async (req: Request, res: Response) => {
   try {
     const id = String(req.params.id);
+    if (id !== req.user?.id) {
+      return res.status(403).json({ error: 'Você não tem permissão para deletar este usuário' });
+    }
     const user = await getUserById(id);
     if (!user) {
       return res.status(404).json({ error: 'Usuário não encontrado' });
