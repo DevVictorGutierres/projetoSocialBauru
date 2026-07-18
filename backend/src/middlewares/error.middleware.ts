@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import  { AppError } from "../utils/AppError.js";
+import { AppError } from "../utils/appError.js";
 
 export const errorHandlerMiddleware = ( err: unknown, req: Request, res: Response, next: NextFunction) => {
     console.error(err);
