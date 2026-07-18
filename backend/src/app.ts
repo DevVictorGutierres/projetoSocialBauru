@@ -5,6 +5,7 @@ import cors from "cors";
 import userRouter from "./routes/user.routes.js";
 import projectRouter from "./routes/project.routes.js";
 import authRouter from "./routes/auth.routes.js";
+import { errorHandlerMiddleware } from "./middlewares/error.middleware.js";
 
 const app = express();
 
@@ -22,5 +23,6 @@ app.get("/", (_, res) => {
 app.use("/api", userRouter);
 app.use("/api", projectRouter);
 app.use("/api/auth", authRouter);
+app.use(errorHandlerMiddleware);
 
 export default app;

@@ -1,101 +1,59 @@
 import type { Request, Response } from 'express';
 import { createUser, getUserById, getAllUsers, updateUser, deleteUser } from '../services/user.service.js';
+import { AppError } from '../utils/appError.js';
 
 const createUserController = async (req: Request, res: Response) => {
-  try {
-    const { confirmarSenha, ...userData } = req.body;
-    const newUser = await createUser(userData);
-    res.status(201).json({
-      message: 'Usuário criado com sucesso!',
-      user: newUser
-    });
-  } catch (error: any) {
-    console.error('Erro ao criar usuário:', error);
-    return res.status(400).json({
-      error: 'Erro ao criar usuário',
-      details: error.message
-    });
-  }
+
+  const { confirmarSenha, ...userData } = req.body;
+  const newUser = await createUser(userData);
+  return res.status(201).json({
+    message: 'Usuário criado com sucesso!',
+    user: newUser
+  });
 };
 
 const getUserByIdController = async (req: Request, res: Response) => {
-  try {
-    const id = String(req.params.id);
-    if (id !== req.user?.id) {
-      return res.status(403).json({
-        error: "Você não tem permissão para visualizar este usuário."
-      });
-    }
-    const user = await getUserById(id);
-    if (!user) {
-      return res.status(404).json({ error: 'Usuário não encontrado' });
-    }
-    res.status(200).json(user);
-  } catch (error: any) {
-    console.error('Erro ao buscar usuário:', error);
-    return res.status(400).json({
-      error: 'Erro ao buscar usuário',
-      details: error.message
-    });
+  const id = String(req.params.id);
+
+  if (id !== req.user?.id) {
+    throw new AppError('Você não tem permissão para acessar este usuário', 403);
   }
+  const user = await getUserById(id);
+  return res.status(200).json(user);
+
 };
 
 const getAllUsersController = async (req: Request, res: Response) => {
-  try {
-    const users = await getAllUsers();
-    res.status(200).json(users);
-  } catch (error: any) {
-    console.error('Erro ao buscar usuários:', error);
-    return res.status(400).json({
-      error: 'Erro ao buscar usuários',
-      details: error.message
-    });
-  }
+
+  const users = await getAllUsers();
+  return res.status(200).json(users);
+
 };
 
 const updateUserController = async (req: Request, res: Response) => {
-  try {
-    const id = String(req.params.id);
-    if (id !== req.user?.id) {
-      return res.status(403).json({ error: 'Você não tem permissão para atualizar este usuário' });
-    }
-    const user = await getUserById(id);
-    if (!user) {
-      return res.status(404).json({ error: 'Usuário não encontrado' });
-    }
-    const updatedUser = await updateUser(id, req.body);
-    return res.status(200).json({
-      message: 'Usuário atualizado com sucesso!',
-      user: updatedUser
-    });
-  } catch (error: any) {
-    console.error('Erro ao atualizar usuário:', error);
-    return res.status(400).json({
-      error: 'Erro ao atualizar usuário',
-      details: error.message
-    });
+  const id = String(req.params.id);
+
+  if (id !== req.user?.id) {
+    throw new AppError('Você não tem permissão para atualizar este usuário', 403);
   }
+  
+  const updatedUser = await updateUser(id, req.body);
+  return res.status(200).json({
+    message: 'Usuário atualizado com sucesso!',
+    user: updatedUser
+  });
 };
 
 const deleteUserController = async (req: Request, res: Response) => {
-  try {
-    const id = String(req.params.id);
-    if (id !== req.user?.id) {
-      return res.status(403).json({ error: 'Você não tem permissão para deletar este usuário' });
-    }
-    const user = await getUserById(id);
-    if (!user) {
-      return res.status(404).json({ error: 'Usuário não encontrado' });
-    }
-    await deleteUser(id);
-    res.status(200).json({ message: 'Usuário deletado com sucesso!' });
-  } catch (error: any) {
-    console.error('Erro ao deletar usuário:', error);
-    return res.status(400).json({
-      error: 'Erro ao deletar usuário',
-      details: error.message
-    });
+  const id = String(req.params.id);
+
+  if (id !== req.user?.id) {
+    throw new AppError('Você não tem permissão para deletar este usuário', 403);
   }
+  await getUserById(id);
+  await deleteUser(id);
+  return res.status(200).json({ message: 'Usuário deletado com sucesso!' });
+
 };
 
 export { createUserController, getUserByIdController, getAllUsersController, updateUserController, deleteUserController };
