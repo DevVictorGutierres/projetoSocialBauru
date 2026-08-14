@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { createUser, getUserById, getAllUsers, updateUser, deleteUser } from '../services/user.service.js';
+import { createUser, getUserById, getAllUsers, updateUser, deleteUser, applyToProject } from '../services/user.service.js';
 import { AppError } from '../utils/appError.js';
 
 const createUserController = async (req: Request, res: Response) => {
@@ -56,4 +56,16 @@ const deleteUserController = async (req: Request, res: Response) => {
 
 };
 
-export { createUserController, getUserByIdController, getAllUsersController, updateUserController, deleteUserController };
+const applyToProjectController = async (req: Request, res: Response) => {
+    const id = String(req.params.id);
+
+  if (id !== req.user?.id) {
+    throw new AppError('Você não tem permissão para adicionar projetos a este usuário', 403);
+  }
+
+  applyToProject(id, String(req.params.projectId));
+
+  return res.status(200).json({ message: 'Cadastrado ao projeto com sucesso!' });
+}
+
+export { createUserController, getUserByIdController, getAllUsersController, updateUserController, deleteUserController, applyToProjectController };

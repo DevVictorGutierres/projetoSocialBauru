@@ -86,5 +86,27 @@ const deleteUser = async (userId: string) => {
   });
 }
 
-export { createUser, getUserById, getAllUsers, updateUser, deleteUser };
+const applyToProject = async (userId: string, projectId: string) => {
+  
+  const [existingUser, existingProject] = await Promise.all([
+    prisma.user.findUnique({ where: { id: userId } }),
+    prisma.project.findUnique({ where: { id: projectId } })
+  ]);
+
+  if (!existingUser) {
+    throw new AppError("Usuário não encontrado", 404);
+  }
+
+  if (!existingProject) {
+    throw new AppError("Projeto não encontrado", 404);
+  }
+
+  return await Promise.all ([
+    prisma.user.update({ where: { id: userId }, data: { projetos: { connect: { id: projectId }}}}),
+    prisma.project.update({ where: { id: projectId }, data: { userIds: { connect: { id: userId }}}})
+  ]);
+
+}
+
+export { createUser, getUserById, getAllUsers, updateUser, deleteUser, applyToProject };
 

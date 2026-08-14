@@ -26,7 +26,7 @@ const getProjectById = async (projectId: string) => {
 }
 
 const getAllProjects = async () => {
-  return prisma.project.findMany();
+  const project = prisma.project.findMany();
 }
 
 const updateProject = async (projectId: string, projectData: UpdateProjectDTO, ownerId: string) => {

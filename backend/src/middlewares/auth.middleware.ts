@@ -7,7 +7,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
 
     if (!authorization) {
         return res.status(401).json({
-            error: "Token não informado."
+            error: "Voce precisa estar logado para acessar esse recurso."
         });
     }
 
