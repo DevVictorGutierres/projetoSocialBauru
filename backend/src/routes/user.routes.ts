@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createUserController, getAllUsersController, getUserByIdController, updateUserController, deleteUserController, applyToProjectController } from '../controllers/user.controller.js';
+import { createUserController, getAllUsersController, getUserByIdController, updateUserController, deleteUserController } from '../controllers/user.controller.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 import { validate } from '../middlewares/validate.middleware.js';
 import { userSchema } from '../validations/user.schema.js';
@@ -9,10 +9,6 @@ const userRouter = Router();
 userRouter.post('/users',
     validate(userSchema),    
     createUserController);
-
-userRouter.post('/users/:id/projects/:projectId',
-    authMiddleware,
-    applyToProjectController);
 
 userRouter.get('/users',
     authMiddleware,

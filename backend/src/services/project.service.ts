@@ -26,7 +26,7 @@ const getProjectById = async (projectId: string) => {
 }
 
 const getAllProjects = async () => {
-  const project = prisma.project.findMany();
+   return prisma.project.findMany();
 }
 
 const updateProject = async (projectId: string, projectData: UpdateProjectDTO, ownerId: string) => {
@@ -45,11 +45,80 @@ const deleteProject = async (projectId: string, ownerId: string) => {
   const project = await getProjectById(projectId);
   
   if (project.ownerId !== ownerId) {
-    throw new AppError('Voce não tem permissão para alterar esse projeto', 403);
+    throw new AppError('Voce não tem permissão para excluir esse projeto', 403);
   }
   return prisma.project.delete({
     where: { id: projectId }
   });
 }
 
-export { createProject, getProjectById, getAllProjects, updateProject, deleteProject };
+const applyToProject = async (userId: string, projectId: string) => {
+  
+  if (!userId) {
+    throw new AppError("Voce precisa estar logado para acessar esse recurso", 401);
+  }
+
+  const [existingUser, existingProject] = await Promise.all([
+    prisma.user.findUnique({ where: { id: userId } }),
+    prisma.project.findUnique({ where: { id: projectId } })
+  ]);
+
+  if (!existingUser) {
+    throw new AppError("Usuário não encontrado", 404);
+  }
+
+  if (!existingProject) {
+    throw new AppError("Projeto não encontrado", 404);
+  }
+
+  if (existingProject.ownerId === userId) {
+    throw new AppError("O dono do projeto não pode se inscrever no próprio projeto", 400);
+  }
+
+  if (existingProject.userIds.includes(userId)) {
+    throw new AppError("Usuário já está inscrito neste projeto", 400);
+  }
+
+  return await prisma.project.update({
+      where: { id: projectId },
+      data: {
+        userIds: {
+          push: userId
+        }
+      }
+    });
+}
+
+const quitFromProject = async (userId: string, projectId: string) => {
+
+    const [existingUser, existingProject] = await Promise.all([
+    prisma.user.findUnique({ where: { id: userId } }),
+    prisma.project.findUnique({ where: { id: projectId } })
+  ]);
+
+  if (!existingUser) {
+    throw new AppError("Usuário não encontrado", 404);
+  }
+
+  if (!existingProject) {
+    throw new AppError("Projeto não encontrado", 404);
+  }
+
+    if (existingProject.ownerId === userId) {
+    throw new AppError("O dono do projeto não pode sair do projeto", 400);
+  }
+
+  if (!existingProject.userIds.includes(userId)) {
+    throw new AppError("Usuário não está inscrito neste projeto", 400);
+  }
+
+  return await prisma.project.update({
+      where: { id: projectId },
+      data: {
+        userIds: existingProject.userIds.filter(id => id !== userId)
+      }
+    });
+}
+
+
+export { createProject, getProjectById, getAllProjects, updateProject, deleteProject, applyToProject, quitFromProject };
