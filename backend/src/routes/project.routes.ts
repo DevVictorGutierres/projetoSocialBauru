@@ -1,4 +1,4 @@
-import { createProjectController, getAllProjectsController, getProjectByIdController, updateProjectController, deleteProjectController, applyToProjectController, quitFromProjectController } from '../controllers/project.controller.js';
+import { createProjectController, getAllProjectsController, getProjectByIdController, updateProjectController, deleteProjectController, applyToProjectController, quitFromProjectController, getUsersOfProjectController } from '../controllers/project.controller.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 import { validate } from '../middlewares/validate.middleware.js';
 import { projectSchema } from '../validations/project.schema.js';
@@ -15,11 +15,15 @@ projectRouter.get('/projects', getAllProjectsController);
 
 projectRouter.get('/projects/:id', getProjectByIdController);
 
-projectRouter.put('/projects/:id', 
+projectRouter.get('/projects/:id/users',
+    authMiddleware,
+    getUsersOfProjectController);
+
+projectRouter.put('/projects/:id',
     authMiddleware,
     updateProjectController);
 
-projectRouter.delete('/projects/:id', 
+projectRouter.delete('/projects/:id',
     authMiddleware,
     deleteProjectController);
 

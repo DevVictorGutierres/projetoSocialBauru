@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { createProject, getProjectById, getAllProjects, updateProject, deleteProject, applyToProject, quitFromProject } from '../services/project.service.js';
+import { createProject, getProjectById, getAllProjects, updateProject, deleteProject, applyToProject, quitFromProject, getUsersOfProject } from '../services/project.service.js';
 
 const createProjectController = async (req: Request, res: Response) => {
     const newProject = await createProject(req.body, req.user.id);
@@ -7,7 +7,6 @@ const createProjectController = async (req: Request, res: Response) => {
       message: 'Projeto criado com sucesso!',
       project: newProject
     });
-
 };
 
 const getProjectByIdController = async (req: Request, res: Response) => {
@@ -15,7 +14,6 @@ const getProjectByIdController = async (req: Request, res: Response) => {
 
     const project = await getProjectById(projectId);
     return res.status(200).json(project);
-
 };
 
 const getAllProjectsController = async (req: Request, res: Response) => {
@@ -55,4 +53,10 @@ const quitFromProjectController = async (req: Request, res: Response) => {
   return res.status(200).json({ message: 'Saída do projeto realizada com sucesso!' });
 };
 
-export { createProjectController, getProjectByIdController, getAllProjectsController, updateProjectController, deleteProjectController, applyToProjectController, quitFromProjectController };
+const getUsersOfProjectController = async (req: Request, res: Response) => {
+  const projectId = String(req.params.id);
+  const users = await getUsersOfProject(projectId, req.user.id);
+  return res.status(200).json(users);
+}
+
+export { createProjectController, getProjectByIdController, getAllProjectsController, updateProjectController, deleteProjectController, applyToProjectController, quitFromProjectController, getUsersOfProjectController };

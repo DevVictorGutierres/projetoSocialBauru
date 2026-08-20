@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { createUser, getUserById, getAllUsers, updateUser, deleteUser } from '../services/user.service.js';
+import { createUser, getUserById, getAllUsers, updateUser, deleteUser, getProjectsUser } from '../services/user.service.js';
 import { AppError } from '../utils/appError.js';
 
 const createUserController = async (req: Request, res: Response) => {
@@ -56,4 +56,15 @@ const deleteUserController = async (req: Request, res: Response) => {
 
 };
 
-export { createUserController, getUserByIdController, getAllUsersController, updateUserController, deleteUserController };
+const getProjectsUserController = async (req: Request, res: Response) => {
+  const id = String(req.params.id);
+
+  if (id !== req.user?.id) {
+    throw new AppError('Você não tem permissão para acessar os projetos deste usuário', 403);
+  }
+
+  const projects = await getProjectsUser(id);
+  return res.status(200).json(projects);
+}
+
+export { createUserController, getUserByIdController, getAllUsersController, updateUserController, deleteUserController, getProjectsUserController };

@@ -86,6 +86,18 @@ const deleteUser = async (userId: string) => {
   });
 }
 
+const getProjectsUser = async (userId: string) => {
+  const projects = await prisma.project.findMany({
+    where: {
+      userIds: {
+        has: userId
+      }
+    }
+})
 
-export { createUser, getUserById, getAllUsers, updateUser, deleteUser };
+  return projects;
+}
+
+
+export { createUser, getUserById, getAllUsers, updateUser, deleteUser, getProjectsUser };
 
