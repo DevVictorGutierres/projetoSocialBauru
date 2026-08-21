@@ -1,7 +1,8 @@
-import { prisma } from '../config/prisma.js';
+import type { ProjectFiltersDTO } from '../dtos/project/filters.project.js';
 import type { CreateProjectDTO } from '../dtos/project/create.project.js';
 import type { UpdateProjectDTO } from '../dtos/project/update.project.js';
 import { AppError } from '../utils/appError.js';
+import { prisma } from '../config/prisma.js';
 
 const createProject = async (projectData: CreateProjectDTO, ownerId: string) => {
 
@@ -25,9 +26,41 @@ const getProjectById = async (projectId: string) => {
   return project;
 }
 
-const getAllProjects = async () => {
-  return prisma.project.findMany();
-}
+import type { Prisma } from "@prisma/client";
+
+const getAllProjects = async ( filters: ProjectFiltersDTO) => {
+  
+  const where: Prisma.ProjectWhereInput = {};
+
+  if (filters.nome) {
+    where.nome = {
+      contains: filters.nome,
+      mode: "insensitive"
+    };
+  }
+
+  if (filters.categoria) {
+    where.categoria = filters.categoria;
+  }
+
+  if (filters.cidade) {
+    where.cidade = {
+      equals: filters.cidade,
+      mode: "insensitive"
+    };
+  }
+
+  return prisma.project.findMany({
+    where,
+
+    skip: (filters.page - 1) * filters.limit,
+    take: filters.limit,
+
+    orderBy: {
+      createdAt: "desc"
+    }
+  });
+};
 
 const updateProject = async (projectId: string, projectData: UpdateProjectDTO, ownerId: string) => {
   const project = await getProjectById(projectId);

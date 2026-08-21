@@ -1,5 +1,7 @@
 import { createProjectController, getAllProjectsController, getProjectByIdController, updateProjectController, deleteProjectController, applyToProjectController, quitFromProjectController, getUsersOfProjectController } from '../controllers/project.controller.js';
+import { projectFiltersSchema } from '../validations/filter.project.schema.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
+import { validateQuery } from '../middlewares/query.middleware.js';
 import { validate } from '../middlewares/validate.middleware.js';
 import { projectSchema } from '../validations/project.schema.js';
 import { Router } from 'express';
@@ -11,7 +13,9 @@ projectRouter.post('/projects',
     validate(projectSchema),
     createProjectController);
 
-projectRouter.get('/projects', getAllProjectsController);
+projectRouter.get('/projects', 
+    validateQuery(projectFiltersSchema),
+    getAllProjectsController);
 
 projectRouter.get('/projects/:id', getProjectByIdController);
 

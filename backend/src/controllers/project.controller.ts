@@ -17,7 +17,9 @@ const getProjectByIdController = async (req: Request, res: Response) => {
 };
 
 const getAllProjectsController = async (req: Request, res: Response) => {
-    const projects = await getAllProjects();
+
+    const filters = res.locals.query;
+    const projects = await getAllProjects(filters);
     return res.status(200).json(projects);
 };
 
