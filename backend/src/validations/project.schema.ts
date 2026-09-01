@@ -28,7 +28,7 @@ export const projectSchema = z.object({
         .string()
         .trim()
         .toUpperCase()
-        .refine((estado) => estados.includes(estado), {
+        .refine((estado) => estados.includes(estado as typeof estados[number]), {
             message: "Estado inválido",
         }),
     cep: z

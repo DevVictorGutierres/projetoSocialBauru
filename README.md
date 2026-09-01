@@ -18,7 +18,7 @@ The platform is intended to remain free and focused on social impact.
 
 ## Current Scope
 
-The repository currently contains the backend REST API. It supports:
+The repository contains a backend REST API and a responsive React frontend. It supports:
 
 - user registration and profile management;
 - project creation and management;
@@ -31,6 +31,8 @@ The repository currently contains the backend REST API. It supports:
 - listing the projects joined by a user;
 - listing project participants with privacy-aware responses;
 - request validation and centralized error handling.
+
+The frontend provides a project discovery experience inspired by marketplace interfaces: a landing page, cause navigation, project cards, filters, project details, login, a personal dashboard, and a project submission form.
 
 ## Tech Stack
 
@@ -45,6 +47,9 @@ The repository currently contains the backend REST API. It supports:
 - **dotenv** — environment variable loading;
 - **CORS** — cross-origin request configuration;
 - **TSX** — TypeScript development runner.
+- **React 19 + Vite** — frontend application and build tooling;
+- **React Router** — client-side navigation;
+- **Lucide React** — interface icons.
 
 ## Architecture
 
@@ -142,6 +147,17 @@ backend/
 
 **Status:** Completed
 
+### Sprint 5 — Project Discovery and Frontend
+
+- project search by name, category, city, state, neighbourhood, status, and operating day;
+- safe query validation with Zod;
+- pagination metadata and configurable sorting;
+- user responses without password or CPF fields;
+- responsive React frontend with project discovery, details, authentication, dashboard, and project submission screens;
+- visual validation of the primary navigation and search flows.
+
+**Status:** Completed
+
 ## Main API Routes
 
 All routes use the `/api` prefix.
@@ -231,6 +247,22 @@ By default, the API is available at:
 
 ```text
 http://localhost:3000
+```
+
+### Frontend
+
+In a separate terminal:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The frontend is available at `http://localhost:5173` and uses `http://localhost:3000/api` by default. To use another API location, create `frontend/.env` with:
+
+```env
+VITE_API_URL=http://your-api-url/api
 ```
 
 ## Testing

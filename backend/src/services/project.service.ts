@@ -1,8 +1,9 @@
-import type { ProjectFiltersDTO } from '../dtos/project/filters.project.js';
+import type { ProjectFiltersDTO, ProjectSort } from '../dtos/project/filters.project.js';
 import type { CreateProjectDTO } from '../dtos/project/create.project.js';
 import type { UpdateProjectDTO } from '../dtos/project/update.project.js';
 import { AppError } from '../utils/appError.js';
 import { prisma } from '../config/prisma.js';
+import type { Prisma } from '@prisma/client';
 
 const createProject = async (projectData: CreateProjectDTO, ownerId: string) => {
 
@@ -26,10 +27,18 @@ const getProjectById = async (projectId: string) => {
   return project;
 }
 
-import type { Prisma } from "@prisma/client";
+const getProjectOrder = (sort: ProjectSort): Prisma.ProjectOrderByWithRelationInput => {
+  const orderBy: Record<ProjectSort, Prisma.ProjectOrderByWithRelationInput> = {
+    recent: { createdAt: 'desc' },
+    oldest: { createdAt: 'asc' },
+    name_asc: { nome: 'asc' },
+    name_desc: { nome: 'desc' }
+  };
 
-const getAllProjects = async ( filters: ProjectFiltersDTO) => {
-  
+  return orderBy[sort];
+};
+
+const getAllProjects = async (filters: ProjectFiltersDTO) => {
   const where: Prisma.ProjectWhereInput = {};
 
   if (filters.nome) {
@@ -50,16 +59,49 @@ const getAllProjects = async ( filters: ProjectFiltersDTO) => {
     };
   }
 
-  return prisma.project.findMany({
-    where,
+  if (filters.estado) {
+    where.estado = filters.estado;
+  }
 
-    skip: (filters.page - 1) * filters.limit,
-    take: filters.limit,
+  if (filters.bairro) {
+    where.bairro = {
+      equals: filters.bairro,
+      mode: 'insensitive'
+    };
+  }
 
-    orderBy: {
-      createdAt: "desc"
+  if (filters.status) {
+    where.status = filters.status;
+  }
+
+  if (filters.diaFuncionamento) {
+    where.diasFuncionamento = {
+      has: filters.diaFuncionamento
+    };
+  }
+
+  const skip = (filters.page - 1) * filters.limit;
+  const orderBy = getProjectOrder(filters.sort);
+
+  const [projects, total] = await Promise.all([
+    prisma.project.findMany({
+      where,
+      skip,
+      take: filters.limit,
+      orderBy
+    }),
+    prisma.project.count({ where })
+  ]);
+
+  return {
+    data: projects,
+    pagination: {
+      page: filters.page,
+      limit: filters.limit,
+      total,
+      totalPages: Math.ceil(total / filters.limit)
     }
-  });
+  };
 };
 
 const updateProject = async (projectId: string, projectData: UpdateProjectDTO, ownerId: string) => {

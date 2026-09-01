@@ -4,6 +4,20 @@ import type { CreateUserDTO } from '../dtos/user/create.user.js';
 import type { UpdateUserDTO } from '../dtos/user/update.user.js';
 import { AppError } from '../utils/appError.js';
 
+const safeUserSelect = {
+  id: true,
+  nome: true,
+  email: true,
+  telefone: true,
+  endereco: true,
+  bairro: true,
+  cidade: true,
+  estado: true,
+  cep: true,
+  avatarUrl: true,
+  createdAt: true
+} as const;
+
 const createUser = async (dadosUsuario: CreateUserDTO) => {
   const [emailExists, cpfExists] = await Promise.all([
     prisma.user.findUnique({ where: { email: dadosUsuario.email } }),
@@ -23,14 +37,16 @@ const createUser = async (dadosUsuario: CreateUserDTO) => {
     data: {
       ...dadosUsuario,
       senha: senhaHash
-    }
+    },
+    select: safeUserSelect
   });
 };
 
 const getUserById = async (userId: string) => {
 
   const user = await prisma.user.findUnique({
-    where: { id: userId }
+    where: { id: userId },
+    select: safeUserSelect
   });
   if (!user) {
     throw new AppError('Usuário não encontrado', 404);
@@ -39,7 +55,9 @@ const getUserById = async (userId: string) => {
 }
 
 const getAllUsers = async () => {
-  return prisma.user.findMany();
+  return prisma.user.findMany({
+    select: safeUserSelect
+  });
 }
 
 const updateUser = async (userId: string, userData: UpdateUserDTO) => {
@@ -76,7 +94,8 @@ const updateUser = async (userId: string, userData: UpdateUserDTO) => {
   }
   return prisma.user.update({
     where: { id: userId },
-    data
+    data,
+    select: safeUserSelect
   });
 };
 
